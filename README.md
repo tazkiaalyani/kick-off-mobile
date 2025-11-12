@@ -15,7 +15,49 @@ For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
 
+TUGAS 8
+=======
+1.  Jelaskan perbedaan antara Navigator.push() dan Navigator.pushReplacement() pada Flutter. 
+    Dalam kasus apa sebaiknya masing-masing digunakan pada aplikasi Football Shop kamu?
+---> Navigator.push() digunakan untuk pindah ke page baru tanpa menutup page sebelumnya, 
+    jadi user masih bisa kembali ke page awal dengan tombol “back”. Sedangkan 
+    Navigator.pushReplacement() mengganti page yang sedang dibuka dengan page baru,
+    sehingga page sebelumnya tidak bisa dikembalikan lagi. Dalam aplikasi Football Shop saya,
+    Navigator.push() digunakan saat user menekan tombol "Add Product" untuk pindah ke page form. 
+    Ini agar user bisa kembali (back) ke halaman utama setelah selesai mengisi form.
+    Sebaliknya, Navigator.pushReplacement() digunakan saat user push menu 'Home' dari 
+    drawer. Ini akan mengganti page apapun yang sedang dibuka (misalnya page form) dengan 
+    home page, sehingga user tidak bisa 'back' ke page form tadi.
+
+2. Bagaimana kamu memanfaatkan hierarchy widget seperti Scaffold, AppBar, dan Drawer untuk 
+   membangun struktur halaman yang konsisten di seluruh aplikasi?
+---> Saya menggunakan Scaffold sebagai struktur dasar setiap page agar tampilan tetap rapi dan 
+     konsisten. Di dalamnya, ada AppBar untuk menampilkan judul halaman atau tombol navigasi, dan 
+     Drawer untuk memudahkan akses ke halaman lain seperti All Products, My Product, atau Add
+     Products.
+
+3.  Dalam konteks desain antarmuka, apa kelebihan menggunakan layout widget seperti Padding, 
+    SingleChildScrollView, dan ListView saat menampilkan elemen-elemen form? Berikan contoh 
+    penggunaannya dari aplikasi kamu.
+---> Widget seperti Padding membantu memberi jarak antar elemen agar tampilan lebih rapi dan tidak 
+     terlalu rapat. SingleChildScrollView berguna agar halaman bisa digulir saat elemen form cukup 
+     panjang, terutama di layar kecil. ListView cocok digunakan untuk menampilkan banyak elemen yang 
+     seragam seperti daftar produk atau item keranjang belanja. Misalnya, pada halaman form checkout, 
+     saya pakai Padding di productlist_form.dart sebagai child utama dari Form. Saya membungkus
+     seluruh column yang berisi field-field dengan SingleChildScrollView. 
+
+4.  Bagaimana kamu menyesuaikan warna tema agar aplikasi Football Shop memiliki identitas visual 
+    yang konsisten dengan brand toko?
+---> Saya menyesuaikan warna tema aplikasi Kick Off dengan mengatur properti warna pada widget 
+     seperti AppBar dan ElevatedButton agar sesuai dengan warna brand. Misalnya, aku mengganti 
+     backgroundColor AppBar menjadi warna biru gradasi yang mencerminkan identitas toko, serta 
+     menyesuaikan warna tombol action menggunakan ButtonStyle agar tetap seragam. Dengan 
+     begitu, setiap halaman, termasuk halaman form dan menu utama, memiliki tampilan yang konsisten 
+     dengan tema visual Kick Off.
+
+
 TUGAS 7
+=======
 1.  Jelaskan apa itu widget tree pada Flutter dan bagaimana hubungan parent-child (induk-anak) bekerja antar widget.
 --> Widget tree itu seperti struktur pohon yang isinya semua widget yang menyusun tampilan aplikasi Flutter. Setiap widget bisa punya “anak” (child) yang juga bisa punya anak lagi, dan seterusnya.
     Jadi hubungan parent-child itu seperti hirarki, parent ngatur atau membungkus childnya, sedangkan child mengikuti aturan atau layout dari parent-nya. Misalnya Column (parent) bisa punya beberapa Text atau Button (child).
