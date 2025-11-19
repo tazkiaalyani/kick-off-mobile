@@ -14,6 +14,97 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+TUGAS 9
+=======
+1. Jelaskan mengapa kita perlu membuat model Dart saat mengambil/mengirim data JSON? Apa 
+konsekuensinya jika langsung memetakan Map<String, dynamic> tanpa model (terkait validasi tipe, 
+null-safety, maintainability)?
+--> Model Dart dipakai supaya data dari Django punya bentuk yang jelas dan tipe yang pasti. Kalau 
+cuma pakai Map<String, dynamic>, struktur datanya jadi liar dan rawan error. Model membantu ngejamin 
+tipe data, ngejamin null-safety, dan bikin kode lebih gampang dipelihara kalau API berubah. Selain 
+itu, model bikin akses data lebih rapi karena kita akses lewat properti, bukan string key yang rawan 
+typo. Intinya, model bikin aplikasi lebih aman, jelas, dan enak dikelola untuk jangka panjang.
+
+2. Apa fungsi package http dan CookieRequest dalam tugas ini? Jelaskan perbedaan peran http vs 
+CookieRequest.
+--> Package http dipakai untuk request standar seperti GET dan POST tanpa manajemen session. Ini 
+cocok buat endpoint umum yang tidak butuh login. CookieRequest beda fungsi karena dia nyimpen dan 
+bawa cookie session Django secara otomatis. CookieRequest jadi solusi khusus buat request yang butuh 
+autentikasi, seperti login, mengambil data user, atau mengakses endpoint yang butuh session. Jadi 
+http itu request biasa, sementara CookieRequest itu request yang terintegrasi dengan sistem login Django.
+
+3. Jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.
+--> Autentikasi Django pakai session. Artinya seluruh halaman harus pakai session yang sama. Kalau 
+setiap widget bikin instance CookieRequest sendiri, maka session-nya terpecah dan Django nganggep 
+user belum login. Karena itu instance CookieRequest dibagikan lewat Provider supaya semua halaman 
+pakai session yang sama dan status login tetap konsisten.
+
+4.  Jelaskan konfigurasi konektivitas yang diperlukan agar Flutter dapat berkomunikasi dengan Django.
+Mengapa kita perlu menambahkan 10.0.2.2 pada ALLOWED_HOSTS, mengaktifkan CORS dan pengaturan 
+SameSite/cookie, dan menambahkan izin akses internet di Android? Apa yang akan terjadi jika konfigurasi 
+tersebut tidak dilakukan dengan benar?
+--> Supaya Flutter bisa komunikasi dengan Django, ada beberapa konfigurasi yang harus disiapkan. 
+Alamat 10.0.2.2 perlu dimasukkan ke ALLOWED_HOSTS karena emulator Android hanya bisa mengakses 
+localhost Django melalui alamat itu. CORS diaktifkan supaya Django mengizinkan request dari aplikasi 
+Flutter. Pengaturan SameSite dan cookie harus disesuaikan supaya session dari Django tidak diblokir 
+browser emulator. Android juga butuh izin internet di AndroidManifest agar aplikasi boleh ngirim 
+request ke luar. Kalau salah satu konfigurasi hilang atau salah, request bisa gagal total, cookie 
+tidak tersimpan, atau Django menolak request.
+
+5. Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter.
+--> Prosesnya dimulai dari user yang mengisi data di Flutter. Data ini disimpan lewat controller atau 
+state. Flutter kemudian mengirim data itu dalam bentuk JSON ke API Django melalui http atau CookieRequest. 
+Django menerima data, memprosesnya seperti validasi atau menyimpan ke database, lalu mengembalikan respons 
+JSON. Flutter menerima respons itu, mengubahnya ke dalam model Dart, dan model tersebut dipakai untuk 
+menampilkan data di UI melalui widget seperti Text, Card, atau ListView.
+
+6. Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada
+Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.
+--> Saat login, Flutter mengirim username dan password lewat CookieRequest. Django mengecek datanya
+dan kalau cocok, Django membuat session dan mengembalikan cookie session itu. CookieRequest menyimpan 
+cookie supaya request berikutnya dianggap sebagai user yang sudah login. Setelah itu Flutter 
+menampilkan menu utama. Proses register mirip, hanya saja Django membuat user baru terlebih dahulu. 
+Untuk logout, Flutter mengirim request logout menggunakan CookieRequest, Django menghapus session, 
+dan Flutter kembali ke halaman login. Semua proses ini berjalan dari input Flutter, diproses Django, 
+sampai status login berubah di aplikasi.
+
+7.  Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step! 
+(bukan hanya sekadar mengikuti tutorial).
+-->
+- Implementasi fitur registrasi akun pada backend dan client 
+- Buat endpoint registrasi di Django yang menerima data seperti username, password, dan field tambahan jika diperlukan. 
+- Di Flutter, buat halaman registrasi dengan form input dan validasi sederhana (mis. cek field kosong, format password). 
+- Kirim request POST berisi JSON ke endpoint registrasi (mis. request.postJson('/register/', body)), tangani response error/sukses, dan arahkan user ke halaman login setelah registrasi berhasil. 
+- Membuat halaman login pada Flutter 
+- Buat halaman login dengan dua input: username dan password, beserta handling loading dan error. 
+- Panggil mekanisme login melalui CookieRequest.login() atau POST ke endpoint login. 
+- Setelah response sukses dan cookie session diterima, set state aplikasi menjadi authenticated dan navigasi ke halaman utama/menu aplikasi. 
+- Integrasi autentikasi Django dengan Flutter (session management)
+- Konfigurasi view login/logout di Django untuk mengembalikan response JSON dan meng-set session cookie (sessionid). 
+- Inisialisasi satu instance CookieRequest di main.dart dan sediakan melalui Provider atau mekanisme state management lain. 
+- Pastikan semua request yang memerlukan autentikasi menggunakan instance CookieRequest tersebut sehingga cookie session otomatis dikirimkan. 
+- Membuat model kustom di Django dan endpoint JSON 
+- Definisikan model di Django (mis. Item) dengan field name, price, description, thumbnail, category, is_featured, dan relasi ForeignKey ke User bila diperlukan. 
+- Lakukan migrasi schema (makemigrations, migrate). 
+- Implementasikan serializer/view yang mengembalikan JSON untuk list, create, dan detail item (DRF atau JsonResponse). 
+- Membuat model Dart dan parsing JSON di Flutter 
+- Buat file model Dart (mis. item.dart) dengan konstruktor, fromJson, dan toJson. Pastikan handling untuk tipe numeric dan nilai nullable. 
+- Gunakan model ini untuk mem-parse response JSON menjadi objek Dart yang terstruktur. 
+- Menampilkan daftar item (list page) di Flutter 
+- Buat service untuk mengambil data list dari endpoint Django (mis. request.getJson('/api/items/')). 
+- Konversi response menjadi List<Item> menggunakan Item.fromJson. 
+- Render daftar menggunakan ListView.builder, setiap item ditampilkan dalam Card yang memuat name, price, description singkat, thumbnail (pakai Image.network + placeholder), category, dan indikator is_featured. 
+- Membuat halaman detail untuk setiap item 
+- Tambahkan navigasi dari tiap card list ke DetailScreen dengan mengirim objek Item sebagai argumen. 
+- Di DetailScreen, tampilkan seluruh atribut model secara lengkap (nama, harga, deskripsi penuh, gambar, kategori, status featured, dll). 
+- Sediakan tombol atau AppBar dengan tombol kembali untuk kembali ke halaman daftar. 
+- Menerapkan filter item berdasarkan user yang login 
+- Implementasikan filter di backend agar endpoint hanya mengembalikan data milik request.user (contoh: Item.objects.filter(user=request.user)). 
+- Pastikan endpoint yang melakukan filter memerlukan autentikasi session sehingga data terbatas hanya untuk pemiliknya. 
+- Testing alur end-to-end 
+- Uji end-to-end: register -> login -> ambil daftar item -> buka detail item -> logout. 
+- Periksa behavior session cookie, response error handling, dan tampilan loading/error di UI. 
+- Pastikan konfigurasi konektivitas (ALLOWED_HOSTS, CORS, SameSite cookie) sudah sesuai untuk environment development/production.
 
 TUGAS 8
 =======
